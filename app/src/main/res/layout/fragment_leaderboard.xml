@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/leaderboard_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/leaderboard_fragment_title"
+        android:textAlignment="center"
+        android:paddingTop="5sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="27sp"/>
+
+    <TextView
+        android:id="@+id/leaderboard_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/leaderboard_motivation_text"
+        android:textAlignment="center"
+        android:padding="5dp"
+        app:layout_constraintTop_toBottomOf="@id/leaderboard_title"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/log_it_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/log_it_home_text"
+        android:paddingVertical="10dp"
+        android:textSize="23sp"
+        app:layout_constraintTop_toBottomOf="@id/leaderboard_text"
+        app:layout_constraintStart_toStartOf="@id/leaderboard_recyclerView"
+        app:layout_constraintEnd_toEndOf="@id/leaderboard_recyclerView"
+        />
+
+    <TextView
+        android:id="@+id/hello_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/leaderboard_position"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:paddingVertical="10sp"
+        app:layout_constraintTop_toBottomOf="@id/log_it_button"
+        app:layout_constraintBottom_toTopOf="@id/leaderboard_recyclerView"
+        app:layout_constraintStart_toStartOf="@id/log_it_button"
+        app:layout_constraintEnd_toEndOf="@id/log_it_button"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/leaderboard_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="12sp"
+        app:layout_constraintTop_toBottomOf="@id/hello_text"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
