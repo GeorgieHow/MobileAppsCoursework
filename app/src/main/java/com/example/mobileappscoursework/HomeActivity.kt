@@ -38,7 +38,6 @@ class HomeActivity : AppCompatActivity() {
             true
         }
 
-        // Optional: Sync ViewPager page changes with BottomNavigationView
         binding.navHostFragmentActivityMain.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 binding.navView.menu.getItem(position).isChecked = true
