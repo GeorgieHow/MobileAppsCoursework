@@ -8,16 +8,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileappscoursework.R
 import com.example.mobileappscoursework.model.LogEntry
 
-class LogRecyclerAdapter(private val logs: List<LogEntry>) : RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
+class LogRecyclerAdapter(private val logs: MutableList<LogEntry>, private val onItemClicked: (LogEntry) -> Unit) : RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
 
-    class LogViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class LogViewHolder(view: View, onItemClicked: (Int) -> Unit) : RecyclerView.ViewHolder(view) {
         val dateTextView: TextView = view.findViewById(R.id.log_date)
         val logTextView: TextView = view.findViewById(R.id.log_text)
+
+        init {
+            view.setOnClickListener {
+                val position = bindingAdapterPosition // Use bindingAdapterPosition here
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClicked(position)
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.log_item_layout, parent, false)
-        return LogViewHolder(view)
+        return LogViewHolder(view) { position ->
+            onItemClicked(logs[position])
+        }
     }
 
     override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
@@ -27,4 +38,10 @@ class LogRecyclerAdapter(private val logs: List<LogEntry>) : RecyclerView.Adapte
     }
 
     override fun getItemCount() = logs.size
+
+    fun updateData(newData: List<LogEntry>) {
+        logs.clear()
+        logs.addAll(newData)
+        notifyDataSetChanged()
+    }
 }

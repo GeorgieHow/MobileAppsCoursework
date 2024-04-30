@@ -1,5 +1,6 @@
 package com.example.mobileappscoursework.ui.logs
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mobileappscoursework.LogDetailsActivity
 import com.example.mobileappscoursework.R
 import com.example.mobileappscoursework.adapter.LogRecyclerAdapter
 import com.example.mobileappscoursework.databinding.FragmentLogsBinding
@@ -21,6 +23,7 @@ class LogFragment : Fragment() {
 
     private var _binding: FragmentLogsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var logRecyclerAdapter: LogRecyclerAdapter
 
     private val userId by lazy { FirebaseAuth.getInstance().currentUser?.uid }
     private val db = FirebaseFirestore.getInstance()
@@ -36,16 +39,19 @@ class LogFragment : Fragment() {
         _binding = FragmentLogsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        logRecyclerAdapter = LogRecyclerAdapter(mutableListOf(), this::handleLogClick)
         binding.previousLogsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = LogRecyclerAdapter(emptyList())
+            adapter = logRecyclerAdapter
         }
-
-        loadLogs()
-
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loadLogs()
+    }
 
 
     private fun loadLogs() {
@@ -68,13 +74,26 @@ class LogFragment : Fragment() {
                         }
                     }
                     if (logs.isNotEmpty()) {
-                        binding.previousLogsRecyclerView.adapter = LogRecyclerAdapter(logs)
+                        logRecyclerAdapter.updateData(logs)
                     }
                 }
                 .addOnFailureListener { exception ->
 
                 }
         }
+    }
+
+    private fun handleLogClick(logEntry: LogEntry) {
+        val intent = Intent(activity, LogDetailsActivity::class.java).apply {
+            putExtra("logDate", logEntry.date)
+            putExtra("logTitle", logEntry.title)
+            putExtra("logDescription", logEntry.description)
+            putExtra("logHours", logEntry.hours)
+            putExtra("logTags", ArrayList(logEntry.tags))
+            putExtra("logLocation", logEntry.location)
+            putExtra("logImage", logEntry.imageUri)
+        }
+        startActivity(intent)
     }
 
     override fun onDestroyView() {
