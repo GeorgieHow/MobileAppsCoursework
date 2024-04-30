@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".HomeActivity"
             android:exported="true"
+            android:theme="@style/Theme.MobileAppsCourseworkLogin"
             android:label="Home">
         </activity>
         <activity android:name=".SignUpPageActivity"
@@ -34,6 +35,7 @@
         </activity>
         <activity android:name=".LoggingChunksActivity"
             android:exported="true"
+            android:theme="@style/Theme.MobileAppsCourseworkLogin"
             android:label="Record your activity">
         </activity>
     </application>
