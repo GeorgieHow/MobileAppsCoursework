@@ -1,5 +1,6 @@
 package com.example.mobileappscoursework
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -21,16 +22,23 @@ import java.util.Locale
 
 class LoggingChunksActivity: AppCompatActivity() {
 
-    val db = FirebaseFirestore.getInstance()
-    val mAUth = FirebaseAuth.getInstance()
-    val uid = mAUth.currentUser?.uid
-    val tags = mutableListOf<String>()
+    private val db = FirebaseFirestore.getInstance()
+    private val mAUth = FirebaseAuth.getInstance()
+    private val uid = mAUth.currentUser?.uid
+    private val tags = mutableListOf<String>()
+    private val uploadedTags = mutableSetOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.logging_chunks_layout)
 
         val rootView = findViewById<View>(android.R.id.content)
+
+        uid?.let { userId ->
+            db.collection("tags").whereEqualTo("uid", userId).get().addOnSuccessListener { documents ->
+                uploadedTags.addAll(documents.mapNotNull { it.getString("tag") })
+            }
+        }
 
         // Cancel Button.
         val cancelButton = findViewById<Button>(R.id.cancel_button)
@@ -101,20 +109,26 @@ class LoggingChunksActivity: AppCompatActivity() {
 
                 uid?.let { userId ->
                     val userLogsRef = db.collection("users").document(userId).collection("logs")
-                    userLogsRef.add(logEntry).addOnSuccessListener { documentReference ->
+                    userLogsRef.add(logEntry).addOnSuccessListener { document ->
                         tags.forEach { tag ->
-                            val tagsRef = db.collection("tags")
-                            tagsRef.whereEqualTo("tag", tag).whereEqualTo("userId", userId).get().addOnSuccessListener { documents ->
-                                if (documents.isEmpty) {
-                                    tagsRef.add(
-                                        hashMapOf(
-                                            "tag" to tag,
-                                            "uid" to userId
-                                        )
+                            if (!uploadedTags.contains(tag)) {
+                                val tagsRef = db.collection("tags")
+                                tagsRef.add(
+                                    hashMapOf(
+                                        "tag" to tag,
+                                        "uid" to userId
                                     )
-                                }
+                                )
                             }
                         }
+
+                        val uploadedDocumentID = document.id
+
+                        val intent = Intent(this, LoggingChunksContinuedActivity::class.java)
+                        intent.putExtra("uploadedDocumentID", uploadedDocumentID)
+                        startActivity(intent)
+                        finish()
+
                     }.addOnFailureListener { e ->
                         val errorUploadSnackbar = Snackbar.make(rootView,
                             "Unable to upload log. Please try again.",

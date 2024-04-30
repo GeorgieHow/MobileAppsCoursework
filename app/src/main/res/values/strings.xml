@@ -49,4 +49,8 @@
     <string name="back">Back</string>
     <string name="logs">Logs</string>
     <string name="profile">Profile</string>
+    <string name="information_here_is_optional">Information here is optional to upload. If you wish to <b>not</b> upload anything more, please press the \'Finish Upload\' button.</string>
+    <string name="upload_picture">Upload Picture</string>
+    <string name="enter_the_location">Enter the location of this activity </string>
+    <string name="finish_upload">Finish Upload</string>
 </resources>

@@ -38,6 +38,11 @@
             android:theme="@style/Theme.MobileAppsCourseworkLogin"
             android:label="Record your activity">
         </activity>
+        <activity android:name=".LoggingChunksContinuedActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MobileAppsCourseworkLogin"
+            android:label="Record your activity">
+        </activity>
     </application>
 
 </manifest>
