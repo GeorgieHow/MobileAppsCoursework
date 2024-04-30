@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class LoggingChunksActivity: AppCompatActivity() {
@@ -171,6 +173,21 @@ class LoggingChunksActivity: AppCompatActivity() {
         if (!tags.contains(tagText)) {
             tags.add(tagText)
         }
+    }
+
+    fun onDateFieldClicked(view: View) {
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select date")
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener { selection: Long ->
+            val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(selection))
+            val dateEditText = findViewById<TextInputEditText>(R.id.chunk_date_text)
+            dateEditText.setText(formattedDate)
+        }
+
+        datePicker.show(supportFragmentManager, datePicker.toString())
     }
 
     private fun isValidDate(dateStr: String): Boolean {
