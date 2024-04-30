@@ -26,7 +26,7 @@ class LeaderboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val dashboardViewModel =
-            ViewModelProvider(this).get(LeaderboardViewModel::class.java)
+            ViewModelProvider(this)[LeaderboardViewModel::class.java]
 
         _binding = FragmentLeaderboardBinding.inflate(inflater, container, false)
         val root: View = binding.root

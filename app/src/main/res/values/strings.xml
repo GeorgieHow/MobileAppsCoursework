@@ -53,4 +53,6 @@
     <string name="upload_picture">Upload Picture</string>
     <string name="enter_the_location">Enter the location of this activity </string>
     <string name="finish_upload">Finish Upload</string>
+    <string name="previous_logged_activities">Previous Logged Activities</string>
+    <string name="view_previous_logs_here">View previous logs <b>here</b>:</string>
 </resources>
