@@ -47,4 +47,6 @@
     <string name="enter_your_second_name">Enter second name</string>
     <string name="create_account">Create Account</string>
     <string name="back">Back</string>
+    <string name="logs">Logs</string>
+    <string name="profile">Profile</string>
 </resources>

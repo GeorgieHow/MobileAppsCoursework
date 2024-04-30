@@ -16,4 +16,15 @@
         android:icon="@drawable/groups_icon"
         android:title="@string/title_groups" />
 
+    <item
+        android:id="@+id/navigation_logs"
+        android:icon="@drawable/logs_icon"
+        android:title="@string/logs" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/profile_icon"
+        android:title="@string/profile" />
+
+
 </menu>

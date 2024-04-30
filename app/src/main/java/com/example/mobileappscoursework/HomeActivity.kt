@@ -33,6 +33,8 @@ class HomeActivity : AppCompatActivity() {
                 R.id.navigation_home -> 0
                 R.id.navigation_leaderboard -> 1
                 R.id.navigation_groups -> 2
+                R.id.navigation_logs -> 3
+                R.id.navigation_profile -> 4
                 else -> 0
             }
             true
