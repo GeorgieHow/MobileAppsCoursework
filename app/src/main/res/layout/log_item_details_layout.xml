@@ -43,8 +43,7 @@
         android:id="@+id/title_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="25dp"
-        android:layout_marginTop="25dp"
+
         android:textSize="30dp"
         android:text="@string/title_here"
         android:background="@drawable/shadow"
@@ -59,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="25dp"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:text="@string/title_here"
         android:paddingHorizontal="20dp"
         app:layout_constraintTop_toBottomOf="@id/title_text_view"
@@ -71,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="25dp"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:text="@string/title_here"
         android:paddingHorizontal="20dp"
         app:layout_constraintTop_toBottomOf="@id/date_text_view"
@@ -84,7 +83,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="25dp"
         android:layout_marginTop="25dp"
-        android:textSize="30dp"
+        android:textSize="22dp"
         android:paddingHorizontal="10dp"
         android:paddingBottom="10dp"
         android:text="@string/title_here"
@@ -99,7 +98,7 @@
         android:id="@+id/hours_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="30dp"
+        android:textSize="22dp"
         android:text="@string/hours_carried_out"
         android:background="@color/md_theme_secondary"
         android:textColor="@color/md_theme_onSecondary"
@@ -113,7 +112,7 @@
         android:id="@+id/hours_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="30dp"
+        android:textSize="22dp"
         android:text="1"
         android:background="@color/md_theme_secondary"
         android:textColor="@color/md_theme_onSecondary"
@@ -128,7 +127,7 @@
         android:id="@+id/tags_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="30dp"
+        android:textSize="22dp"
         android:text="1"
         android:background="@color/md_theme_tertiary"
         android:textColor="@color/md_theme_onTertiary"
@@ -162,5 +161,18 @@
         app:layout_constraintBottom_toBottomOf="@id/background_image_view"
         app:layout_constraintTop_toBottomOf="@id/log_image_view"
         />
+
+    <Button
+        android:id="@+id/update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="25dp"
+        android:text="@string/edit"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="@id/background_image_view"
+        app:layout_constraintBottom_toBottomOf="@id/back_button"
+        app:layout_constraintTop_toTopOf="@id/back_button"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

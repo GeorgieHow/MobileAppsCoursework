@@ -66,7 +66,7 @@ class LogFragment : Fragment() {
                         val hours = document.getLong("hours")?.toInt() ?: 0
                         val tags = document.get("tags") as? List<String> ?: emptyList()
                         val location = document.getString("location") ?: ""
-                        val imageUri = document.getString("imageUri") ?: " "
+                        val imageUri = document.getString("imageUrl") ?: " "
                         if (date != null && title != null) {
                             LogEntry(title, description, date, hours, tags, location, imageUri)
                         } else {
