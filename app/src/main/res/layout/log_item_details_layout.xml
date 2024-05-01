@@ -43,7 +43,6 @@
         android:id="@+id/title_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
         android:textSize="30dp"
         android:text="@string/title_here"
         android:background="@drawable/shadow"
@@ -172,6 +171,192 @@
         app:layout_constraintEnd_toEndOf="@id/background_image_view"
         app:layout_constraintBottom_toBottomOf="@id/back_button"
         app:layout_constraintTop_toTopOf="@id/back_button"
+        />
+
+    <!-- Edit elements for reference -->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chunk_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:hint="@string/activity_name_title"
+        app:layout_constraintTop_toTopOf="@id/background_image_view"
+        app:layout_constraintStart_toStartOf="@id/background_image_view"
+        app:layout_constraintEnd_toEndOf="@id/background_image_view">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chunk_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chunk_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginTop="3dp"
+        android:visibility="gone"
+        android:hint="@string/activity_description_title"
+        app:layout_constraintTop_toBottomOf="@id/chunk_title"
+        app:layout_constraintStart_toStartOf="@id/chunk_title"
+        app:layout_constraintEnd_toEndOf="@id/chunk_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chunk_description_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_halfway"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chunk_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="3dp"
+        android:hint="@string/activity_date_title"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/chunk_description"
+        app:layout_constraintStart_toStartOf="@id/chunk_title"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical_halfway">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chunk_date_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"
+            android:cursorVisible="false"
+            android:onClick="onDateFieldClicked" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chunk_hours"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="3dp"
+        android:hint="@string/activity_hours_title"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/chunk_description"
+        app:layout_constraintStart_toStartOf="@id/guideline_vertical_halfway"
+        app:layout_constraintEnd_toEndOf="@id/chunk_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chunk_hours_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chunk_tags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:visibility="gone"
+        android:hint="@string/activity_tag_title"
+        app:layout_constraintTop_toBottomOf="@id/chunk_date"
+        app:layout_constraintStart_toStartOf="@id/chunk_title"
+        app:layout_constraintEnd_toEndOf="@id/chunk_title">
+
+        <AutoCompleteTextView
+            android:id="@+id/chunk_tags_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/tags_chip_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/shadow"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/chunk_tags"
+        app:layout_constraintStart_toStartOf="@id/chunk_tags"
+        app:layout_constraintEnd_toEndOf="@id/chunk_tags">
+    </com.google.android.material.chip.ChipGroup>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chunk_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:hint="@string/enter_the_location"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tags_chip_group"
+        app:layout_constraintStart_toStartOf="@id/chunk_title"
+        app:layout_constraintEnd_toEndOf="@id/chunk_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chunk_location_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/cancel_update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginBottom="25dp"
+        android:text="@string/cancel_update"
+        android:textSize="20dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/background_image_view"
+        app:layout_constraintBottom_toBottomOf="@id/background_image_view"
+        />
+
+    <Button
+        android:id="@+id/confirm_update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="25dp"
+        android:text="@string/confirm_update"
+        android:textSize="20dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/background_image_view"
+        app:layout_constraintBottom_toBottomOf="@id/cancel_update_button"
+        app:layout_constraintTop_toTopOf="@id/cancel_update_button"
+        />
+
+    <ImageView
+        android:id="@+id/picture_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/chunk_title"
+        app:layout_constraintEnd_toEndOf="@id/chunk_title"
+        app:layout_constraintTop_toBottomOf="@id/edit_picture_button"
+        app:layout_constraintBottom_toTopOf="@id/cancel_update_button"/>
+
+    <Button
+        android:id="@+id/edit_picture_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="25dp"
+        android:text="@string/edit_picture"
+        android:textSize="20dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/chunk_title"
+        app:layout_constraintEnd_toEndOf="@id/chunk_title"
+        app:layout_constraintBottom_toTopOf="@id/picture_image_view"
+        app:layout_constraintTop_toBottomOf="@id/chunk_location"
         />
 
 

@@ -68,7 +68,7 @@ class LogFragment : Fragment() {
                         val location = document.getString("location") ?: ""
                         val imageUri = document.getString("imageUrl") ?: " "
                         if (date != null && title != null) {
-                            LogEntry(title, description, date, hours, tags, location, imageUri)
+                            LogEntry(document.id,title, description, date, hours, tags, location, imageUri)
                         } else {
                             null
                         }
@@ -85,6 +85,7 @@ class LogFragment : Fragment() {
 
     private fun handleLogClick(logEntry: LogEntry) {
         val intent = Intent(activity, LogDetailsActivity::class.java).apply {
+            putExtra("logID", logEntry.id)
             putExtra("logDate", logEntry.date)
             putExtra("logTitle", logEntry.title)
             putExtra("logDescription", logEntry.description)

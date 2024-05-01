@@ -60,4 +60,7 @@
     <string name="title_here">title here</string>
     <string name="hours_carried_out">Hours carried out:</string>
     <string name="edit">Edit</string>
+    <string name="cancel_update">Cancel</string>
+    <string name="confirm_update">Confirm Edit</string>
+    <string name="edit_picture">Edit Picture</string>
 </resources>
