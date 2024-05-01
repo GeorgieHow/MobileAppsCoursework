@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,9 +16,17 @@ import com.example.mobileappscoursework.adapter.LogRecyclerAdapter
 import com.example.mobileappscoursework.databinding.FragmentLogsBinding
 import com.example.mobileappscoursework.model.LogEntry
 import com.example.mobileappscoursework.ui.leaderboard.LeaderboardViewModel
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 class LogFragment : Fragment() {
 
@@ -44,20 +53,48 @@ class LogFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = logRecyclerAdapter
         }
+
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadLogs()
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = today.format(formatter)
+
+        val refreshButton = view.findViewById<FloatingActionButton>(R.id.refresh_button)
+        refreshButton.setOnClickListener{
+            loadLogs("1970-01-01", formattedDate)
+        }
+
+        val rangeDatePickerButton = view.findViewById<Button>(R.id.range_date_button)
+        rangeDatePickerButton.setOnClickListener {
+            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText("Select dates")
+                .build()
+
+            dateRangePicker.addOnPositiveButtonClickListener { datePair ->
+                val startDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(datePair.first))
+                val endDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(datePair.second))
+                loadLogs(startDate, endDate)
+            }
+
+            dateRangePicker.show(childFragmentManager, "date_range_picker")
+        }
+
+        loadLogs("1970-01-01", formattedDate)
     }
 
 
-    private fun loadLogs() {
+    private fun loadLogs(startDate: String, endDate: String) {
         userId?.let { userId ->
             val logsCollection = db.collection("users").document(userId).collection("logs")
-            logsCollection.orderBy("date", Query.Direction.DESCENDING).get()
+            logsCollection
+                .whereGreaterThanOrEqualTo("sortableDate", startDate)
+                .whereLessThanOrEqualTo("sortableDate", endDate)
+                .orderBy("sortableDate", Query.Direction.DESCENDING).get()
                 .addOnSuccessListener { documents ->
                     val logs = documents.mapNotNull { document ->
                         val date = document.getString("date")
@@ -95,11 +132,6 @@ class LogFragment : Fragment() {
             putExtra("logImage", logEntry.imageUri)
         }
         startActivity(intent)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        loadLogs()
     }
 
     override fun onDestroyView() {

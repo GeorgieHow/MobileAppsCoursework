@@ -29,6 +29,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/refresh_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:srcCompat="@drawable/refresh_icon"
+        app:layout_constraintEnd_toEndOf="@id/previous_logs_recycler_view"
+        app:layout_constraintTop_toBottomOf="@id/previous_logs_text_view"
+        app:layout_constraintBottom_toTopOf="@id/previous_logs_recycler_view"
+        />
+
+    <Button
+        android:id="@+id/range_date_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_date_range"
+        app:layout_constraintTop_toTopOf="@id/refresh_button"
+        app:layout_constraintBottom_toBottomOf="@+id/refresh_button"
+        app:layout_constraintStart_toStartOf="@id/previous_logs_text_view" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/previous_logs_recycler_view"
         android:layout_width="0dp"
@@ -36,7 +55,7 @@
         android:layout_marginVertical="20dp"
         app:layout_constraintStart_toStartOf="@id/previous_logs_text_view"
         app:layout_constraintEnd_toEndOf="@id/previous_logs_text_view"
-        app:layout_constraintTop_toBottomOf="@id/previous_logs_text_view"
+        app:layout_constraintTop_toBottomOf="@id/refresh_button"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 

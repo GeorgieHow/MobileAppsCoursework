@@ -63,4 +63,6 @@
     <string name="cancel_update">Cancel</string>
     <string name="confirm_update">Confirm Edit</string>
     <string name="edit_picture">Edit Picture</string>
+    <string name="select_date_range">Select Date Range</string>
+    <string name="export">Export</string>
 </resources>

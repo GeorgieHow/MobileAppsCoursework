@@ -79,6 +79,12 @@ class LoggingChunksActivity: AppCompatActivity() {
             val date = findViewById<TextInputEditText>(R.id.chunk_date_text).text.toString()
             val hours = findViewById<TextInputEditText>(R.id.chunk_hours_text).text.toString().toIntOrNull() ?: 0
 
+
+            val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateFormat = inputFormat.parse(date)
+            val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val sortableDate = targetFormat.format(dateFormat)
+
             if (title.isBlank() || description.isBlank() || date.isBlank()
                 || hours.toString().isBlank() || tags.isEmpty()) {
                 val emptyFieldsSnackbar = Snackbar.make(rootView,
@@ -106,7 +112,8 @@ class LoggingChunksActivity: AppCompatActivity() {
                     "description" to description,
                     "date" to date,
                     "hours" to hours,
-                    "tags" to tags.toList()
+                    "tags" to tags.toList(),
+                    "sortableDate" to sortableDate
                 )
 
                 uid?.let { userId ->
