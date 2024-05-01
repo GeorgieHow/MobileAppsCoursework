@@ -97,6 +97,11 @@ class LogFragment : Fragment() {
         startActivity(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadLogs()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

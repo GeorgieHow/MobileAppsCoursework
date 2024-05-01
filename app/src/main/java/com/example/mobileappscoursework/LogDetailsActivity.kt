@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
@@ -31,7 +33,9 @@ class LogDetailsActivity: AppCompatActivity(){
 
     private val db = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
+    private val uid = mAuth.currentUser?.uid
     private val storage = FirebaseStorage.getInstance().reference
+    private val uploadedTags = mutableSetOf<String>()
 
     private lateinit var titleTextView: TextView
     private lateinit var dateTextView: TextView
@@ -65,10 +69,17 @@ class LogDetailsActivity: AppCompatActivity(){
     private lateinit var confirmEditButton: Button
 
     private lateinit var selectedImageUri: Uri
+    private var tags = mutableSetOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.log_item_details_layout)
+
+        uid?.let { userId ->
+            db.collection("tags").whereEqualTo("uid", userId).get().addOnSuccessListener { documents ->
+                uploadedTags.addAll(documents.mapNotNull { it.getString("tag") })
+            }
+        }
 
         backButton = findViewById(R.id.back_button)
         backButton.setOnClickListener {
@@ -91,6 +102,7 @@ class LogDetailsActivity: AppCompatActivity(){
         confirmEditButton.setOnClickListener{
             if (logId != null) {
                 updateLogEntry(logId)
+                uploadTagsToFirebase()
             }
         }
 
@@ -98,7 +110,10 @@ class LogDetailsActivity: AppCompatActivity(){
         val title = intent.getStringExtra("logTitle")
         val description = intent.getStringExtra("logDescription")
         val hours = intent.getIntExtra("logHours", 0)
-        val tags = intent.getStringArrayListExtra("logTags")
+        val intialTags = intent.getStringArrayListExtra("logTags")
+        if (intialTags != null) {
+            tags.addAll(intialTags)
+        }
         val location = intent.getStringExtra("logLocation")
         val imageUri = intent.getStringExtra("logImage")
         if (!imageUri.isNullOrEmpty()){
@@ -145,6 +160,7 @@ class LogDetailsActivity: AppCompatActivity(){
         dateEditText = findViewById(R.id.chunk_date_text)
         hoursEditText = findViewById(R.id.chunk_hours_text)
         tagsEditText = findViewById(R.id.chunk_tags_text)
+        setupAutoCompleteTextView(tagsEditText)
         locationEditText = findViewById(R.id.chunk_location_text)
 
         titleEditText.setText(title)
@@ -167,6 +183,21 @@ class LogDetailsActivity: AppCompatActivity(){
                 tagsChipGroup.addView(chip)
             }
         }
+
+
+        tagsEditText.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val tagText = tagsEditText.text.toString()
+                if (tagText.isNotEmpty()) {
+                    addChipToGroup(tagText, tagsChipGroup)
+                    tagsEditText.text = null
+                }
+                true
+            } else {
+                false
+            }
+        }
+
 
         Glide.with(this)
             .load(imageUri)
@@ -226,6 +257,39 @@ class LogDetailsActivity: AppCompatActivity(){
         confirmEditButton.visibility = View.GONE
     }
 
+    private fun setupAutoCompleteTextView(autoCompleteTextView: AutoCompleteTextView) {
+        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line)
+        autoCompleteTextView.setAdapter(adapter)
+
+        uid?.let { userId ->
+            db.collection("tags").whereEqualTo("uid", userId).get().addOnSuccessListener { documents ->
+                val existingTags = documents.map { it.getString("tag") ?: "" }.filterNot { it.isBlank() }
+                adapter.clear()
+                adapter.addAll(existingTags)
+                adapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun addChipToGroup(tagText: String, chipGroup: ChipGroup) {
+        if (!tags.contains(tagText)) {
+            val chip = Chip(this).apply {
+                text = tagText
+                isCloseIconVisible = true
+                isClickable = true
+                isCheckable = false
+                setOnCloseIconClickListener {
+                    chipGroup.removeView(this)
+                    tags.remove(tagText)
+                }
+            }
+            chipGroup.addView(chip)
+            if (!tags.contains(tagText)) {
+                tags.add(tagText)
+            }
+        }
+    }
+
     private fun updateLogEntry(documentId: String) {
         val title = titleEditText.text.toString()
         val description = descriptionEditText.text.toString()
@@ -278,6 +342,23 @@ class LogDetailsActivity: AppCompatActivity(){
             tags.add(chip.text.toString())
         }
         return tags
+    }
+
+    private fun uploadTagsToFirebase() {
+        tags.forEach { tag ->
+            if (!uploadedTags.contains(tag)) {
+                val newTagMap = hashMapOf(
+                    "uid" to uid,
+                    "tag" to tag
+                )
+                db.collection("tags")
+                    .add(newTagMap)
+                    .addOnSuccessListener {
+                    }
+                    .addOnFailureListener {
+                    }
+            }
+        }
     }
 
     private fun handleImageUpload(logRef: DocumentReference) {
