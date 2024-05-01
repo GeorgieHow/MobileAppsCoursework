@@ -1,7 +1,7 @@
 package com.example.mobileappscoursework.model
 
 data class LogEntry (
-    val id: String,
+    @Transient val id: String? = null,
     val title: String,
     val description: String,
     val date: String,

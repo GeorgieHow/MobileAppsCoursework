@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
@@ -11,9 +12,11 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.mobileappscoursework.model.LogEntry
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -23,6 +26,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
+import java.io.File
+import java.io.FileOutputStream
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -36,6 +42,8 @@ class LogDetailsActivity: AppCompatActivity(){
     private val uid = mAuth.currentUser?.uid
     private val storage = FirebaseStorage.getInstance().reference
     private val uploadedTags = mutableSetOf<String>()
+
+    private lateinit var createDocumentLauncher: ActivityResultLauncher<String>
 
     private lateinit var titleTextView: TextView
     private lateinit var dateTextView: TextView
@@ -198,11 +206,22 @@ class LogDetailsActivity: AppCompatActivity(){
             }
         }
 
-
         Glide.with(this)
             .load(imageUri)
             .placeholder(R.drawable.shadow)
             .into(pictureEditImageView)
+
+        createDocumentLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+            if (uri != null) {
+                writeJsonToFile(uri, exportLogToJson())
+            }
+        }
+
+        val exportButton = findViewById<Button>(R.id.export_chunk)
+        exportButton.setOnClickListener {
+            createDocumentLauncher.launch("LogEntry_${System.currentTimeMillis()}.json")
+
+        }
     }
 
     private fun loadEditUI(){
@@ -440,6 +459,30 @@ class LogDetailsActivity: AppCompatActivity(){
             return !parsedDate.before(calendarMin) && !parsedDate.after(calendarMax)
         } catch (e: ParseException) {
             return false
+        }
+    }
+
+    private fun exportLogToJson(): String {
+        val logEntry = LogEntry(
+            title = titleEditText.text.toString(),
+            description = descriptionEditText.text.toString(),
+            date = dateEditText.text.toString(),
+            hours = hoursEditText.text.toString().toInt(),
+            tags = collectTagsFromChipGroup(),
+            location = locationEditText.text.toString(),
+            imageUri = selectedImageUri.toString()
+        )
+
+        return Gson().toJson(logEntry)
+    }
+
+    private fun writeJsonToFile(uri: Uri, jsonContent: String) {
+        try {
+            contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(jsonContent.toByteArray(Charsets.UTF_8))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
