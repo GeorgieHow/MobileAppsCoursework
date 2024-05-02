@@ -8,10 +8,15 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.widget.ViewPager2
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.mobileappscoursework.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.example.mobileappscoursework.adapter.NavigationAdapter
+import com.example.mobileappscoursework.ui.leaderboard.LeaderboardWorker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class HomeActivity : AppCompatActivity() {
 
@@ -32,7 +37,21 @@ class HomeActivity : AppCompatActivity() {
             finish()
         }
 
+        scheduleLeaderboardUpdate()
         setupBottomNavigationView()
+    }
+
+    private fun scheduleLeaderboardUpdate() {
+        val currentDay = Calendar.getInstance()
+        var daysUntilSunday = Calendar.SUNDAY - currentDay.get(Calendar.DAY_OF_WEEK)
+        if (daysUntilSunday <= 0) {
+            daysUntilSunday += 7
+        }
+        val initialDelay = daysUntilSunday * 24 * 60 * 60 * 1000L
+        val workRequest = PeriodicWorkRequestBuilder<LeaderboardWorker>(7, TimeUnit.DAYS)
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+            .build()
+        WorkManager.getInstance(this).enqueue(workRequest)
     }
 
     private fun setupBottomNavigationView() {

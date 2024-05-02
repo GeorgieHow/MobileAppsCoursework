@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import com.example.mobileappscoursework.model.BadgeEntry
 import com.example.mobileappscoursework.adapter.BadgeReyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class ProfileFragment: Fragment() {
 
@@ -23,6 +25,11 @@ class ProfileFragment: Fragment() {
     private var mAuth = FirebaseAuth.getInstance()
     private var uid = mAuth.currentUser?.uid
 
+    private lateinit var userNameTextView: TextView
+    private lateinit var userWinsTextView: TextView
+    private lateinit var totalHoursLogged: TextView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,34 +37,50 @@ class ProfileFragment: Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         recyclerViewBadges = view.findViewById(R.id.badges_recycler_view)
-        fetchLogsAndUpdateBadges()
+        userNameTextView = view.findViewById(R.id.users_name_text_view)
+        userWinsTextView = view.findViewById(R.id.wins_text_view)
+        totalHoursLogged = view.findViewById(R.id.hours_logged_text_view)
+
+        fetchUserDataAndLogs()
+        uid?.let { fetchLogsAndUpdateBadges(it, 0) }
+
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
+        swipeRefreshLayout.setOnRefreshListener {
+            fetchUserDataAndLogs()
+        }
+
         return view
     }
 
-    private fun fetchLogsAndUpdateBadges() {
-        val userLogsRef = uid?.let {
-            db.collection("users").document(it)
-                .collection("logs")
-        }
-
-        userLogsRef?.get()?.addOnSuccessListener { documents ->
+    private fun fetchLogsAndUpdateBadges(userId: String, totalWins: Int) {
+        val userLogsRef = db.collection("users").document(userId).collection("logs")
+        userLogsRef.get().addOnSuccessListener { documents ->
             var totalHours = 0
             for (document in documents) {
                 totalHours += document.getLong("hours")?.toInt() ?: 0
             }
-            updateBadgeAchievements(totalHours)
+
+            totalHoursLogged.text = totalHours.toString()
+            swipeRefreshLayout.isRefreshing = false
+            updateBadgeAchievements(totalHours, totalWins)
             initializeBadgeDisplay()
-        }?.addOnFailureListener {
+        }.addOnFailureListener {
+            swipeRefreshLayout.isRefreshing = false
+            Log.e("ProfileFragment", "Error fetching logs")
         }
     }
 
-    private fun updateBadgeAchievements(totalHours: Int) {
+    private fun updateBadgeAchievements(totalHours: Int, totalWins: Int) {
         badges = createBadges().map { badge ->
-            badge.copy(isAchieved = totalHours >= badge.requirement)
+            when (badge.name) {
+                "Victory Royal", "Weekly Winner", "On Fire", "Champion" ->
+                    badge.copy(isAchieved = totalWins >= badge.requirement)
+                else ->
+                    badge.copy(isAchieved = totalHours >= badge.requirement)
+            }
         }.toMutableList()
-
-        Log.d("Help", "$badges")
     }
+
     private fun createBadges(): List<BadgeEntry> {
         return listOf(
             BadgeEntry("Log Beginner", 10, false),
@@ -65,8 +88,32 @@ class ProfileFragment: Fragment() {
             BadgeEntry("Advanced Logger", 100, false),
             BadgeEntry("Logging Expert", 500, false),
             BadgeEntry("Master Logger", 1000, false),
-            BadgeEntry("Logging Monarch", 2000, false)
+            BadgeEntry("Logging Monarch", 2000, false),
+            BadgeEntry("Victory Royal", 1, false),
+            BadgeEntry("Weekly Winner", 5, false),
+            BadgeEntry("On Fire", 10, false),
+            BadgeEntry("Champion", 25, false)
         )
+    }
+
+    private fun fetchUserDataAndLogs() {
+        uid?.let { userId ->
+            val userDocRef = db.collection("users").document(userId)
+
+            userDocRef.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val totalWins = document.getLong("winCount")?.toInt() ?: 0
+                    val userName = document.getString("firstName") ?: "No Name"
+
+                    userNameTextView.text = userName
+                    userWinsTextView.text = totalWins.toString()
+
+                    fetchLogsAndUpdateBadges(userId, totalWins)
+                }
+            }.addOnFailureListener { exception ->
+                Log.d("ProfileFragment", "Error getting user details: ", exception)
+            }
+        }
     }
 
     private fun initializeBadgeDisplay() {

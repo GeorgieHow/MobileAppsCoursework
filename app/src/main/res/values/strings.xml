@@ -75,4 +75,7 @@
     <string name="pokemon"><b>Pokemon</b></string>
     <string name="badges_earned">How many hours have you logged?\nBadges Earned:</string>
     <string name="profile_details"><b>Profile Details</b></string>
+    <string name="name">Name:</string>
+    <string name="weekly_wins_earned">Weekly Wins Earned:</string>
+    <string name="total_hours_logged">Total Hours Logged:</string>
 </resources>

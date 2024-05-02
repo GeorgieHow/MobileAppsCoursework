@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.mobileappscoursework.LeaderboardEntry
 import com.example.mobileappscoursework.LoggingChunksActivity
 import com.example.mobileappscoursework.R
@@ -33,6 +34,7 @@ class LeaderboardFragment : Fragment() {
     private var db = FirebaseFirestore.getInstance()
     private lateinit var currentWeekTextView: TextView
     private lateinit var helloMessageTextView: TextView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private val binding get() = _binding!!
 
@@ -53,6 +55,8 @@ class LeaderboardFragment : Fragment() {
             startActivity(intent)
         }
 
+
+
         // Initialize the RecyclerView
         binding.leaderboardRecyclerView.layoutManager = LinearLayoutManager(context)
         loadLeaderboardData()
@@ -67,6 +71,11 @@ class LeaderboardFragment : Fragment() {
         val displayStartDate = getStartOfWeek()
         val displayEndDate = getEndOfWeek()
         currentWeekTextView.text = getString(R.string.date_range, displayStartDate, displayEndDate)
+
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
+        swipeRefreshLayout.setOnRefreshListener {
+            loadLeaderboardData()
+        }
 
         helloMessageTextView = view.findViewById(R.id.hello_text)
     }
@@ -127,6 +136,7 @@ class LeaderboardFragment : Fragment() {
                 binding.leaderboardRecyclerView.adapter = LeaderboardAdapter(leaderboardAdapterEntries)
 
                 updateUserPositionMessage(currentUserFirstName, currentUserHours, topEntries)
+                swipeRefreshLayout.isRefreshing = false
 
             } catch (e: Exception) {
             }
