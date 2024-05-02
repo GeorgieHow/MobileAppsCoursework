@@ -11,10 +11,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.mobileappscoursework.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.example.mobileappscoursework.adapter.NavigationAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var mAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +25,12 @@ class HomeActivity : AppCompatActivity() {
 
         val adapter = NavigationAdapter(this)
         binding.navHostFragmentActivityMain.adapter = adapter
+
+        val logOutButton = findViewById<FloatingActionButton>(R.id.log_out_button)
+        logOutButton.setOnClickListener{
+            mAuth.signOut()
+            finish()
+        }
 
         setupBottomNavigationView()
     }
