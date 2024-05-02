@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,7 @@ class LogFragment : Fragment() {
     private var _binding: FragmentLogsBinding? = null
     private val binding get() = _binding!!
     private lateinit var logRecyclerAdapter: LogRecyclerAdapter
+    private lateinit var dateRangeTextView: TextView
 
     private val userId by lazy { FirebaseAuth.getInstance().currentUser?.uid }
     private val db = FirebaseFirestore.getInstance()
@@ -64,9 +66,12 @@ class LogFragment : Fragment() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = today.format(formatter)
 
+        dateRangeTextView = view.findViewById<TextView>(R.id.date_range_text_view)
+
         val refreshButton = view.findViewById<FloatingActionButton>(R.id.refresh_button)
         refreshButton.setOnClickListener{
             loadLogs("1970-01-01", formattedDate)
+            dateRangeTextView.text = getString(R.string.currently_showing_all)
         }
 
         val rangeDatePickerButton = view.findViewById<Button>(R.id.range_date_button)
@@ -78,7 +83,13 @@ class LogFragment : Fragment() {
             dateRangePicker.addOnPositiveButtonClickListener { datePair ->
                 val startDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(datePair.first))
                 val endDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(datePair.second))
+
+                val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val displayStartDate = displayFormat.format(Date(datePair.first))
+                val displayEndDate = displayFormat.format(Date(datePair.second))
+
                 loadLogs(startDate, endDate)
+                dateRangeTextView.text = getString(R.string.date_range, displayStartDate.toString(), displayEndDate.toString())
             }
 
             dateRangePicker.show(childFragmentManager, "date_range_picker")

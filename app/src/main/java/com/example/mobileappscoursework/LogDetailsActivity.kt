@@ -75,6 +75,7 @@ class LogDetailsActivity: AppCompatActivity(){
     private lateinit var editButton: Button
     private lateinit var cancelEditButton: Button
     private lateinit var confirmEditButton: Button
+    private lateinit var exportButton: Button
 
     private lateinit var selectedImageUri: Uri
     private var tags = mutableSetOf<String>()
@@ -217,7 +218,7 @@ class LogDetailsActivity: AppCompatActivity(){
             }
         }
 
-        val exportButton = findViewById<Button>(R.id.export_chunk)
+        exportButton = findViewById<Button>(R.id.export_chunk)
         exportButton.setOnClickListener {
             createDocumentLauncher.launch("LogEntry_${System.currentTimeMillis()}.json")
 
@@ -233,6 +234,7 @@ class LogDetailsActivity: AppCompatActivity(){
         locationTextView.visibility = View.GONE
         pictureImageView.visibility = View.GONE
         hoursTitleTextView.visibility = View.GONE
+        exportButton.visibility = View.GONE
 
         titleEditTextLayout.visibility = View.VISIBLE
         descriptionEditTextLayout.visibility = View.VISIBLE
@@ -259,6 +261,7 @@ class LogDetailsActivity: AppCompatActivity(){
         locationTextView.visibility = View.VISIBLE
         pictureImageView.visibility = View.VISIBLE
         hoursTitleTextView.visibility = View.VISIBLE
+        exportButton.visibility = View.VISIBLE
 
         titleEditTextLayout.visibility = View.GONE
         descriptionEditTextLayout.visibility = View.GONE
