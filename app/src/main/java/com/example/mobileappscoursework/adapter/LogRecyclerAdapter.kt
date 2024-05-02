@@ -16,7 +16,7 @@ class LogRecyclerAdapter(private val logs: MutableList<LogEntry>, private val on
 
         init {
             view.setOnClickListener {
-                val position = bindingAdapterPosition // Use bindingAdapterPosition here
+                val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     onItemClicked(position)
                 }

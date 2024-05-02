@@ -20,7 +20,6 @@ class LeaderboardAdapter(private val entries: List<LeaderboardEntry>) :
             binding.score.text = entry.score.toString()
         }
 
-        // Method to set the trophy drawable
         fun setTrophyDrawable(drawable: Drawable?) {
             binding.playerName.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
         }
@@ -36,12 +35,12 @@ class LeaderboardAdapter(private val entries: List<LeaderboardEntry>) :
         holder.bind(entries[position])
 
         val endColor = ContextCompat.getColor(context, android.R.color.white)
-        // Set background color based on rank
+
         val startColor = when (position) {
-            0 -> ContextCompat.getColor(context, R.color.gold) // 1st place
-            1 -> ContextCompat.getColor(context, R.color.silver) // 2nd place
-            2 -> ContextCompat.getColor(context, R.color.bronze) // 3rd place
-            else -> ContextCompat.getColor(context, R.color.default_background) // Default background
+            0 -> ContextCompat.getColor(context, R.color.gold)
+            1 -> ContextCompat.getColor(context, R.color.silver)
+            2 -> ContextCompat.getColor(context, R.color.bronze)
+            else -> ContextCompat.getColor(context, R.color.default_background)
         }
 
         val gradientDrawable = GradientDrawable(
@@ -49,19 +48,16 @@ class LeaderboardAdapter(private val entries: List<LeaderboardEntry>) :
             intArrayOf(startColor, endColor)
         )
 
-        // If you want to keep the original drawable (like a shape or border), you can layer it
+
         val backgroundDrawable = LayerDrawable(arrayOf(gradientDrawable))
 
-        // Set the gradient as background
         holder.itemView.background = backgroundDrawable
 
-        // Retrieve the trophy drawable and set it
         if (position in 0..2) {
             val trophyDrawable = ContextCompat.getDrawable(context, R.drawable.trophy_icon)?.apply {
                 setBounds(0, 0, intrinsicWidth, intrinsicHeight)
             }
             holder.setTrophyDrawable(trophyDrawable)
-            // Other code to set padding if necessary
         } else {
             holder.setTrophyDrawable(null)
         }
