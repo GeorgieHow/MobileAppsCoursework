@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MobileAppsCoursework</string>
     <string name="title_home">Home</string>
-    <string name="home_welcome_message">Welcome back, <b>Dave</b>! Ready to log anything?</string>
+    <string name="home_welcome_message">Welcome back, <b>%1$s</b>! Ready to log anything?</string>
     <string name="title_leaderboard">Leaderboard</string>
     <string name="title_groups">Groups</string>
     <string name="leaderboard_fragment_title"><b>Current Leaderboard</b></string>
@@ -70,4 +70,7 @@
     <string name="leaderboard_position_below">Hello <b>%1$s</b>, you are %2$s hours behind <b>%3$s</b>.\nThese leaderboards reset weekly.</string>
     <string name="leaderboard_position_win">Hello <b>%1$s</b>, you are at the top of the leaderboard!\nThese leaderboards reset weekly.</string>
     <string name="leaderboard_position_na">Hello <b>%1$s</b>, you are currently not on the leaderboard.\nThese leaderboards reset weekly.</string>
+    <string name="change_weekly_goal">Change Weekly Goal</string>
+    <string name="welcome_user">Welcome, User!</string>
+    <string name="pokemon"><b>Pokemon</b></string>
 </resources>
