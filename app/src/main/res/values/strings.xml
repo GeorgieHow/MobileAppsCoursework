@@ -65,7 +65,7 @@
     <string name="edit_picture">Edit Picture</string>
     <string name="select_date_range">Select Date Range</string>
     <string name="export">Export</string>
-    <string name="currently_showing_all">Currently Showing <b>All</b> Logs</string>
+    <string name="currently_showing_all">Currently Showing All Logs</string>
     <string name="date_range">From <b>%1$s</b> to <b>%2$s</b></string>
     <string name="leaderboard_position_below">Hello <b>%1$s</b>, you are %2$s hours behind <b>%3$s</b>.\nThese leaderboards reset weekly.</string>
     <string name="leaderboard_position_win">Hello <b>%1$s</b>, you are at the top of the leaderboard!\nThese leaderboards reset weekly.</string>

@@ -1,5 +1,6 @@
 package com.example.mobileappscoursework
 
+import NumberPickerDialogFragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -14,6 +15,7 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.ParseException
@@ -197,6 +199,19 @@ class LoggingChunksActivity: AppCompatActivity() {
         datePicker.show(supportFragmentManager, datePicker.toString())
     }
 
+    fun onHoursFieldClicked(view: View) {
+        val numberPickerDialog = HoursPickerDialogFragment().apply {
+            listener = object : HoursPickerDialogFragment.HoursPickerDialogListener {
+                override fun onNumberPicked(number: Int) {
+                    val chunkHoursEditText = findViewById<TextInputEditText>(R.id.chunk_hours_text)
+                    chunkHoursEditText.setText(number.toString())
+                }
+            }
+        }
+        numberPickerDialog.show(supportFragmentManager, "numberPicker")
+    }
+
+
     private fun isValidDate(dateStr: String): Boolean {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         dateFormat.isLenient = false
@@ -226,4 +241,5 @@ class LoggingChunksActivity: AppCompatActivity() {
             return false
         }
     }
+
 }

@@ -1,16 +1,19 @@
 package com.example.mobileappscoursework.ui.leaderboard
 
 import LeaderboardAdapter
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mobileappscoursework.LeaderboardEntry
+import com.example.mobileappscoursework.LoggingChunksActivity
 import com.example.mobileappscoursework.R
 import com.example.mobileappscoursework.databinding.FragmentLeaderboardBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +47,11 @@ class LeaderboardFragment : Fragment() {
         _binding = FragmentLeaderboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-
+        val loggingButton: Button = binding.logItButton
+        loggingButton.setOnClickListener {
+            val intent = Intent(requireContext(), LoggingChunksActivity::class.java)
+            startActivity(intent)
+        }
 
         // Initialize the RecyclerView
         binding.leaderboardRecyclerView.layoutManager = LinearLayoutManager(context)

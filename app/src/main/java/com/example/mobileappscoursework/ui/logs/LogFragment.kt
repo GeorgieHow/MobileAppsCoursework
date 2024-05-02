@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileappscoursework.LogDetailsActivity
+import com.example.mobileappscoursework.LoggingChunksActivity
 import com.example.mobileappscoursework.R
 import com.example.mobileappscoursework.adapter.LogRecyclerAdapter
 import com.example.mobileappscoursework.databinding.FragmentLogsBinding
@@ -55,6 +56,8 @@ class LogFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = logRecyclerAdapter
         }
+
+
 
         return root
     }
