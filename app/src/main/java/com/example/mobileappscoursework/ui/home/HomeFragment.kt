@@ -73,35 +73,6 @@ class HomeFragment : Fragment() {
 
         val lineChart: LineChart = binding.graphLineChart
 
-        val entries = ArrayList<Entry>()
-    // Assuming you have a data source, add entries to the list
-    // The Entry constructor takes two parameters: the first is the X value, and the second is the Y value.
-        entries.add(Entry(0f, 4f)) // Monday
-        entries.add(Entry(1f, 2f)) // Tuesday
-        entries.add(Entry(2f, 4f)) // Wednesday
-        entries.add(Entry(3f, 7f)) // Thursday
-        entries.add(Entry(4f, 9f)) // Friday
-        entries.add(Entry(5f, 6f)) // Saturday
-        entries.add(Entry(6f, 3f)) // Sunday
-
-        val dataSet = LineDataSet(entries, "Hours spent")
-        dataSet.color = Color.BLUE
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.lineWidth = 2f
-        dataSet.setCircleColor(Color.BLUE)
-
-        val lineData = LineData(dataSet)
-        lineChart.data = lineData
-        lineChart.description.text = "Hours logged each day"
-        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
-        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        lineChart.xAxis.granularity = 1f
-        lineChart.axisRight.isEnabled = false
-        lineChart.xAxis.setLabelCount(7, true) // Set to the number of days in the week
-        lineChart.xAxis.labelRotationAngle = -45f
-
-        lineChart.invalidate()
-
         return root
     }
 
@@ -142,6 +113,9 @@ class HomeFragment : Fragment() {
             loadAndDisplayTodayHours()
             fetchRandomPokemon()
             loadWeeklyGoal()
+            fetchWeeklyHours { dailyHours ->
+                setupGraph(dailyHours)
+            }
             swipeRefreshLayout.isRefreshing = false
         }
 
@@ -159,6 +133,10 @@ class HomeFragment : Fragment() {
                 }
                 numberPickerDialog.show(parentFragmentManager, "numberPicker")
             }
+        }
+
+        fetchWeeklyHours { dailyHours ->
+            setupGraph(dailyHours)
         }
 
     }
@@ -360,6 +338,78 @@ class HomeFragment : Fragment() {
             callback(0)
         }
     }
+
+    private fun fetchWeeklyHours(callback: (Map<String, Float>) -> Unit) {
+        val calendar = Calendar.getInstance()
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayNameFormatter = SimpleDateFormat("EEEE", Locale.UK)
+
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        val startDate = formatter.format(calendar.time)
+
+        calendar.add(Calendar.DATE, 6)
+        val endDate = formatter.format(calendar.time)
+
+        val dailyHours = mutableMapOf<String, Float>()
+
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        for (i in 0 until 7) {
+            val dayDate = calendar.time
+            val dayName = dayNameFormatter.format(dayDate)
+            dailyHours[dayName] = 0f
+            calendar.add(Calendar.DATE, 1)
+        }
+
+        uid?.let { userId ->
+            FirebaseFirestore.getInstance().collection("users").document(userId).collection("logs")
+                .whereGreaterThanOrEqualTo("sortableDate", startDate)
+                .whereLessThanOrEqualTo("sortableDate", endDate)
+                .get()
+                .addOnSuccessListener { documents ->
+                    documents.forEach { doc ->
+                        val date = doc.getString("sortableDate")
+                        val hours = doc.getLong("hours")?.toFloat() ?: 0f
+                        if (date != null) {
+                            val dayOfWeek = dayNameFormatter.format(formatter.parse(date)!!)
+                            dailyHours[dayOfWeek] = dailyHours.getOrDefault(dayOfWeek, 0f) + hours
+                        }
+                    }
+                    callback(dailyHours)
+                }.addOnFailureListener {
+                    callback(dailyHours)
+                }
+        }
+    }
+
+    private fun setupGraph(dailyHours: Map<String, Float>) {
+        val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+        val entries = daysOfWeek.mapIndexed { index, day ->
+            Entry(index.toFloat(), dailyHours.getOrElse(day) { 0f })
+        }
+
+        val dataSet = LineDataSet(entries, "Hours Spent")
+        dataSet.color = Color.BLUE
+        dataSet.valueTextColor = Color.BLACK
+        dataSet.lineWidth = 2f
+        dataSet.setCircleColor(Color.BLUE)
+
+        val lineData = LineData(dataSet)
+        binding.graphLineChart.apply {
+            data = lineData
+            description.text = "Hours logged each day"
+            xAxis.valueFormatter = IndexAxisValueFormatter(daysOfWeek)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.granularity = 1f
+            xAxis.setLabelCount(daysOfWeek.size, true)
+            xAxis.labelRotationAngle = -45f
+
+            axisRight.isEnabled = false
+            axisLeft.axisMinimum = 0f
+            axisLeft.granularity = 1f
+            invalidate()
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
