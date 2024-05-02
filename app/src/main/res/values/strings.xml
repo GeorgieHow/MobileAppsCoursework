@@ -73,4 +73,6 @@
     <string name="change_weekly_goal">Change Weekly Goal</string>
     <string name="welcome_user">Welcome, User!</string>
     <string name="pokemon"><b>Pokemon</b></string>
+    <string name="badges_earned">How many hours have you logged?\nBadges Earned:</string>
+    <string name="profile_details"><b>Profile Details</b></string>
 </resources>
