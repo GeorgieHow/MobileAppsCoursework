@@ -5,7 +5,7 @@
     <string name="title_leaderboard">Leaderboard</string>
     <string name="title_groups">Groups</string>
     <string name="leaderboard_fragment_title"><b>Current Leaderboard</b></string>
-    <string name="leaderboard_position">Hello <b>Dave</b>, you are 6 hours behind <b>Bob</b>.\nThese leaderboards reset weekly.</string>
+
     <string name="leaderboard_motivation_text">Want to be higher in the leaderboards? Forgot to log anything today?</string>
     <string name="log_it_home_text">Click to log here</string>
     <string name="home_leaderboard_position">You are currently\n<b>3rd</b>\n in the leaderboard! </string>
@@ -67,4 +67,7 @@
     <string name="export">Export</string>
     <string name="currently_showing_all">Currently Showing <b>All</b> Logs</string>
     <string name="date_range">From <b>%1$s</b> to <b>%2$s</b></string>
+    <string name="leaderboard_position_below">Hello <b>%1$s</b>, you are %2$s hours behind <b>%3$s</b>.\nThese leaderboards reset weekly.</string>
+    <string name="leaderboard_position_win">Hello <b>%1$s</b>, you are at the top of the leaderboard!\nThese leaderboards reset weekly.</string>
+    <string name="leaderboard_position_na">Hello <b>%1$s</b>, you are currently not on the leaderboard.\nThese leaderboards reset weekly.</string>
 </resources>

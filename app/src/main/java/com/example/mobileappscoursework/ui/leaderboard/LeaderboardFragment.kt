@@ -8,16 +8,29 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mobileappscoursework.LeaderboardEntry
+import com.example.mobileappscoursework.R
 import com.example.mobileappscoursework.databinding.FragmentLeaderboardBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class LeaderboardFragment : Fragment() {
 
     private var _binding: FragmentLeaderboardBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    private var db = FirebaseFirestore.getInstance()
+    private lateinit var currentWeekTextView: TextView
+    private lateinit var helloMessageTextView: TextView
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -31,30 +44,120 @@ class LeaderboardFragment : Fragment() {
         _binding = FragmentLeaderboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Example dummy data
-        val dummyData = listOf(
-            LeaderboardEntry(1, "Natasha", 50),
-            LeaderboardEntry(2, "Bob", 48),
-            LeaderboardEntry(3,"Dave", 42),
-            LeaderboardEntry(4, "Zachary", 36),
-            LeaderboardEntry(5, "Beth", 30),
-            LeaderboardEntry(6,"Hector", 27),
-            LeaderboardEntry(7,"Lily", 24),
-            LeaderboardEntry(8, "Gwen", 19),
-            LeaderboardEntry(9, "Julian", 18),
-            LeaderboardEntry(10,"Curtis",7),
-            LeaderboardEntry(11, "John", 4),
-            LeaderboardEntry(12, "Stacy", 2)
-                // Add more entries as needed
-        )
+
 
         // Initialize the RecyclerView
-        binding.leaderboardRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = LeaderboardAdapter(dummyData)
-        }
+        binding.leaderboardRecyclerView.layoutManager = LinearLayoutManager(context)
+        loadLeaderboardData()
 
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        currentWeekTextView = view.findViewById(R.id.leaderboard_current_week_text_view)
+        val displayStartDate = getStartOfWeek()
+        val displayEndDate = getEndOfWeek()
+        currentWeekTextView.text = getString(R.string.date_range, displayStartDate, displayEndDate)
+
+        helloMessageTextView = view.findViewById(R.id.hello_text)
+    }
+
+    private fun loadLeaderboardData() {
+        this.lifecycleScope.launch {
+            try {
+                val userTotals = mutableMapOf<String, Int>()
+                val usersCollection = db.collection("users")
+                val users = usersCollection.get().await()
+
+                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+                var currentUserFirstName = ""
+                var currentUserHours = 0
+
+                val formatter = SimpleDateFormat("yyyy-MM-dd")
+                val calendar = Calendar.getInstance()
+
+                // Gets mondays date for current week.
+                calendar.firstDayOfWeek = Calendar.MONDAY
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+                val startOfWeek = formatter.format(calendar.time)
+
+                // Gets sunday as well for end of week.
+                calendar.add(Calendar.DATE, 6)
+                val endOfWeek = formatter.format(calendar.time)
+
+                for (user in users) {
+                    val userId = user.id
+                    val userFirstName = user.getString("firstName") ?: "User"
+                    val logsCollection = usersCollection.document(userId).collection("logs")
+                    val logs = logsCollection
+                        .whereGreaterThanOrEqualTo("sortableDate", startOfWeek)
+                        .whereLessThanOrEqualTo("sortableDate", endOfWeek)
+                        .get()
+                        .await()
+
+                    var totalHours = 0
+                    logs.forEach { log ->
+                        totalHours += log.getLong("hours")?.toInt() ?: 0
+                    }
+
+                    if (userId == currentUserId) {
+                        currentUserFirstName = userFirstName
+                        currentUserHours = totalHours
+                    }
+
+                    if (totalHours > 0) {
+                        userTotals[user.getString("firstName") ?: userId] = totalHours
+                    }
+                }
+                val sortedEntries = userTotals.toList().sortedByDescending { it.second }
+                val topEntries = sortedEntries.take(10)
+                val leaderboardAdapterEntries = topEntries.mapIndexed { index, entry ->
+                    LeaderboardEntry(index + 1, entry.first, entry.second)
+                }
+
+                binding.leaderboardRecyclerView.adapter = LeaderboardAdapter(leaderboardAdapterEntries)
+
+                updateUserPositionMessage(currentUserFirstName, currentUserHours, topEntries)
+
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun updateUserPositionMessage(firstName: String, userHours: Int, sortedEntries: List<Pair<String, Int>>) {
+        if (sortedEntries.isEmpty()) return
+
+        val currentUserIndex = sortedEntries.indexOfFirst { it.first == firstName }
+        if (currentUserIndex == -1) {
+            helloMessageTextView.text = getString(R.string.leaderboard_position_na, firstName)
+            return
+        }
+
+        if (currentUserIndex == 0) {
+            helloMessageTextView.text = getString(R.string.leaderboard_position_win, firstName)
+        } else {
+            val nextHigherUser = sortedEntries[currentUserIndex - 1]
+            val hoursBehind = nextHigherUser.second - userHours
+            helloMessageTextView.text = getString(R.string.leaderboard_position_below, firstName, hoursBehind.toString(), nextHigherUser.first)
+        }
+    }
+
+    private fun getStartOfWeek(): String {
+        val today = LocalDate.now()
+        val startOfWeek = today.with(DayOfWeek.MONDAY)
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        return startOfWeek.format(formatter)
+    }
+
+    private fun getEndOfWeek(): String {
+        val today = LocalDate.now()
+        val endOfWeek = today.with(DayOfWeek.SUNDAY)
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        return endOfWeek.format(formatter)
     }
 
     override fun onDestroyView() {

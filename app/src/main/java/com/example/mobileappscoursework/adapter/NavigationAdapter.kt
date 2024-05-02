@@ -10,15 +10,15 @@ import com.example.mobileappscoursework.ui.logs.LogFragment
 import com.example.mobileappscoursework.ui.profile.ProfileFragment
 
 class NavigationAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-    override fun getItemCount(): Int = 5
+    override fun getItemCount(): Int = 4
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> HomeFragment()
             1 -> LeaderboardFragment()
-            2 -> GroupsFragment()
-            3 -> LogFragment()
-            4 -> ProfileFragment()
+            //2 -> GroupsFragment()
+            2 -> LogFragment()
+            3 -> ProfileFragment()
             else -> HomeFragment()
         }
     }

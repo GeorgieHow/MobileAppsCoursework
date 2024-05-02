@@ -11,10 +11,6 @@
         android:icon="@drawable/leaderboard_icon"
         android:title="@string/title_leaderboard" />
 
-    <item
-        android:id="@+id/navigation_groups"
-        android:icon="@drawable/groups_icon"
-        android:title="@string/title_groups" />
 
     <item
         android:id="@+id/navigation_logs"

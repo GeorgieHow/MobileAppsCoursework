@@ -32,9 +32,9 @@ class HomeActivity : AppCompatActivity() {
             binding.navHostFragmentActivityMain.currentItem = when (item.itemId) {
                 R.id.navigation_home -> 0
                 R.id.navigation_leaderboard -> 1
-                R.id.navigation_groups -> 2
-                R.id.navigation_logs -> 3
-                R.id.navigation_profile -> 4
+                //R.id.navigation_groups -> 2
+                R.id.navigation_logs -> 2
+                R.id.navigation_profile -> 3
                 else -> 0
             }
             true

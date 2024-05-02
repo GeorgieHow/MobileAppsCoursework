@@ -42,22 +42,31 @@
         android:id="@+id/hello_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/leaderboard_position"
+        android:text=""
         android:textSize="20sp"
         android:textAlignment="center"
         android:paddingVertical="10sp"
         app:layout_constraintTop_toBottomOf="@id/log_it_button"
-        app:layout_constraintBottom_toTopOf="@id/leaderboard_recyclerView"
+        app:layout_constraintBottom_toTopOf="@id/leaderboard_current_week_text_view"
         app:layout_constraintStart_toStartOf="@id/log_it_button"
         app:layout_constraintEnd_toEndOf="@id/log_it_button"
         />
+
+    <TextView
+        android:id="@+id/leaderboard_current_week_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@id/log_it_button"
+        app:layout_constraintEnd_toEndOf="@id/log_it_button"
+        app:layout_constraintTop_toBottomOf="@id/hello_text"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/leaderboard_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="12sp"
-        app:layout_constraintTop_toBottomOf="@id/hello_text"
+        app:layout_constraintTop_toBottomOf="@id/leaderboard_current_week_text_view"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
